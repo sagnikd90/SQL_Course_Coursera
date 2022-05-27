@@ -1,0 +1,291 @@
+Problem:Retrieve all the records from the Employees table.
+
+### Code ###
+select *
+from employees
+##############
+
+Problem: Retrieve the FirstName, LastName, Birthdate, Address, City, and State from the Employees table.
+
+### Code ###
+select 
+FirstName,
+LastName,
+Birthdate,
+Address,
+City,
+State
+from employees
+##############
+
+Problem:Retrieve all the columns from the Tracks table, but only return 20 rows.
+
+### Code ###
+select *
+from tracks
+limit 20
+############
+
+Problem:Find all the tracks that have a length of 5,000,000 milliseconds or more.
+
+### Code ###
+select 
+Trackid,
+Milliseconds
+from tracks
+where Milliseconds>5000000
+##########################
+
+Problem:Find all the invoices whose total is between $5 and $15 dollars.
+
+### Code ###
+select
+InvoiceId,
+Total
+from Invoices
+where Total between 5 and 15
+############################
+
+Problem:Find all the customers from the following States: RJ, DF, AB, BC, CA, WA, NY.
+
+### Code ###
+select 
+FirstName,
+LastName,
+Company,
+State
+from customers
+where (State='RJ' or 
+State='DF' or 
+State='AB' or 
+State='BC' or 
+State='CA' or 
+State='WA' or 
+State='NY')
+################
+
+Problem:Find all the invoices for customer 56 and 58 where the total was between $1.00 and $5.00.
+
+### Code ###
+select
+InvoiceId,
+Total,
+CustomerId,
+InvoiceDate
+from Invoices
+where (CustomerId=56 or CustomerId=58) and 
+(Total>'1' and Total<'5')
+#########################
+
+Problem:Find all the tracks whose name starts with 'All'.
+
+### Code ###
+select
+TrackId,
+Name
+from Tracks
+where Name Like 'All%'
+#####################
+
+Problem:Find all the customer emails that start with "J" and are from gmail.com.
+
+### Code ###
+select
+CustomerId,
+Email
+from Customers
+where Email Like 'J%' and 
+Email Like '%gmail.com'
+######################
+
+Problem:Find all the invoices from the billing city Brasília, Edmonton, and Vancouver and sort in descending order by invoice ID.
+
+### Code ###
+select
+InvoiceId,
+Total,
+BillingCity
+from Invoices
+where BillingCity='Brasilia' or 
+BillingCity='Edmonton' or 
+BillingCity='Vancouver'
+order by InvoiceId desc
+#######################
+
+Problem:Show the number of orders placed by each customer (hint: this is found in the invoices table) and sort the result by the number of orders in descending order.
+
+### Code ###
+select
+CustomerId,
+count(InvoiceId) as orders
+from Invoices
+group by CustomerId
+order by orders desc
+####################
+
+Problem:Find the albums with 12 or more tracks.
+
+### Code ###
+select
+AlbumId,
+Name,
+count(TrackId) as total_tracks
+from Tracks
+group by AlbumId
+having total_tracks>=12
+#######################
+
+Problem:Using a subquery, find the names of all the tracks for the album "Californication".
+
+### Code ###
+select
+AlbumId,
+Name
+from Tracks
+where AlbumId in (select
+                  AlbumId
+                  from Albums
+                  where Title='Californication')
+################################################
+
+Problem:Find the total number of invoices for each customer along with the customer's full name, city and email.
+
+### Code ###
+select
+FirstName,
+LastName,
+City,
+Email,
+count(i.InvoiceId)
+from Customers c inner join Invoices i on c.CustomerId=i.CustomerId
+group by c.CustomerId
+#####################
+
+Problem:Retrieve the track name, album, artistID, and trackID for all the albums.
+
+### Code ###
+select
+t.TrackId as Track_Id,
+t.Name as Track_Name,
+Title as Album,
+a.Name as Artist_Name
+from ((Tracks t inner join Albums b on t.AlbumId=b.AlbumId)
+inner join Artists a on a.ArtistId=b.ArtistId)
+##############################################
+
+Problem:Retrieve a list with the managers last name, and the last name of the employees who report to him or her.
+
+### Code ###
+select 
+m.LastName as Manager_Last_Name,
+e.LastName as Employee_Last_Name
+from Employees e inner join Employees m on e.ReportsTo=m.EmployeeId
+####################################################################
+
+Problem:Find the name and ID of the artists who do not have albums. 
+
+### Code ###
+select
+a.Name,
+b.AlbumId
+from Artists a left join Albums b on a.ArtistId=b.ArtistId
+where Title is Null
+###################
+
+Problem:Use a UNION to create a list of all the employee's and customer's first names and last names ordered by the last name in descending order.
+
+### Code ###
+select
+FirstName,
+LastName
+from Employees
+union
+select
+FirstName,
+LastName
+from Customers
+order by LastName desc
+######################
+
+Problem:See if there are any customers who have a different city listed in their billing city versus their customer city.
+
+### Code ###
+select
+c.FirstName,
+c.LastName,
+c.City as Customer_City,
+i.BillingCity
+from Customers c inner join Invoices i on c.CustomerId=i.CustomerId
+where Customer_City!=BillingCity
+################################
+
+Problem:Pull a list of customer ids with the customer’s full name, and address, along with combining their city and country together. 
+Be sure to make a space in between these two and make it UPPER CASE. (e.g. LOS ANGELES USA)
+
+### Code ###
+select
+CustomerId,
+FirstName,
+LastName,
+Address,
+upper(City || " " || Country) as City_Country 
+from Customers
+##############
+
+Problem:Create a new employee user id by combining the first 4 letters of the employee’s first name with the first 2 letters of the employee’s last name. 
+Make the new field lower case and pull each individual step to show your work.
+
+### Code ###
+select
+FirstName,
+LastName,
+lower(substr(FirstName,1,4)) as A,
+lower(substr(LastName,1,2)) as B,
+lower(substr(FirstName,1,4) || substr(LastName,1,2)) as UserId
+from Employees
+##############
+
+Problem: Show a list of employees who have worked for the company for 15 or more years using the current date function. Sort by lastname ascending.
+
+### Code ###
+select
+FirstName,
+LastName,
+HireDate,
+strftime('%Y','now')-strftime('%Y',HireDate) as Years_Worked
+from Employees
+where Years_Worked>=15
+order by LastName asc
+#####################
+
+Problem:Profiling the Customers table, answer the following question.
+
+### Code ###
+select count(*)
+from Customers
+where Address is Null
+#####################
+
+Problem:Find the cities with the most customers and rank in descending order.
+
+### Code ###
+select
+count(CustomerId) as Total_Customers,
+City
+from Customers
+group by City
+order by Total_Customers desc
+#############################
+
+Problem:Create a new customer invoice id by combining a customer’s invoice id with their first and last name while ordering your query in the 
+following order: firstname, lastname, and invoiceID.
+
+### Code ###
+select
+c.FirstName,
+c.LastName,
+i.InvoiceId,
+c.FirstName || c.LastName || i.InvoiceId as new_id
+from Customers c inner join Invoices i on c.CustomerId=i.CustomerId
+where new_id like 'AstridGruber%'
+################################
